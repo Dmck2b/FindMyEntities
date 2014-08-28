@@ -1,0 +1,15 @@
+name: FindMyEntities
+version: 1.0-SNAPSHOT
+main: coffee.suddenly.findmyentities.Main
+author: Suddenly
+description: Find the chunks causing your entity issues
+website: suddenly.coffee
+commands:
+    findmyentities:
+        description: Find all the (tile)entities in the player's current world or specified world
+        usage: /<command> <tileeneitites/entities> (world)
+        permission: find-my-entities.find
+    teleporttochunk:
+        description: Teleports you to the corner of a specified chunk
+        usage: /<command> <int> <int> (world)
+        permission: find-my-entities.teleport
