@@ -1,7 +1,10 @@
 package coffee.suddenly.findmyentities;
 
+import static java.lang.Integer.parseInt;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -45,6 +48,23 @@ public class Main extends JavaPlugin implements Listener{
                     }
                 } else {
                     sender.sendMessage("Please specify whether to search for entities or tileentities.");
+                }
+            } else if (args.length == 3) {
+                if(args[2].matches(("\\d+")) ) {
+                    if(args[0].equalsIgnoreCase("entities") || args[0].equalsIgnoreCase("tileentities")) {
+                        if(getServer().getWorld(args[1]) != null) {
+                            String type = args[0];
+                            World world = getServer().getWorld(args[1]);
+                            Integer radius = parseInt(args[2]);
+                            doItForUnloadedChunks(world, type, sender, radius);
+                        } else {
+                            sender.sendMessage("Please specify an actual world.");
+                        }
+                    } else {
+                        sender.sendMessage("Please specify whether to search for entities or tileentities.");
+                    }
+                } else {
+                    return false;
                 }
             } else {
                 return false;
@@ -94,6 +114,77 @@ public class Main extends JavaPlugin implements Listener{
             for(Chunk chunk : chunks) {
                 if(chunk.getEntities().length >= entityLimit) {
                     sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                }
+            }
+        }
+        sender.sendMessage("Finished searching.");
+    } 
+    public void doItForUnloadedChunks(World world, String type, CommandSender sender, Integer radius) {
+        int chunkX;
+        int chunkZ;
+
+        for(chunkX = 0; chunkX < radius; chunkX++) {
+            for(chunkZ = 0; chunkZ < radius; chunkZ++) {
+                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
+                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                if(chunk != null) {
+                    if(type.equalsIgnoreCase("tileentities")) {
+                        if(chunk.getTileEntities().length >= entityLimit) {
+                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    } else if(type.equalsIgnoreCase("entities")) {
+                    if(chunk.getEntities().length >= entityLimit) {
+                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    }
+                }
+            }
+            for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
+                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
+                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                if(chunk != null) {
+                    if(type.equalsIgnoreCase("tileentities")) {
+                        if(chunk.getTileEntities().length >= entityLimit) {
+                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    } else if(type.equalsIgnoreCase("entities")) {
+                    if(chunk.getEntities().length >= entityLimit) {
+                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    }
+                }
+            }
+        }
+        
+        for(chunkX = 0; chunkX > -radius; chunkX--) {
+            for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
+                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
+                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                if(chunk != null) {
+                    if(type.equalsIgnoreCase("tileentities")) {
+                        if(chunk.getTileEntities().length >= entityLimit) {
+                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    } else if(type.equalsIgnoreCase("entities")) {
+                    if(chunk.getEntities().length >= entityLimit) {
+                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    }
+                }
+            }
+            for(chunkZ = 0; chunkZ < radius; chunkZ++) {
+                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
+                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                if(chunk != null) {
+                    if(type.equalsIgnoreCase("tileentities")) {
+                        if(chunk.getTileEntities().length >= entityLimit) {
+                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    } else if(type.equalsIgnoreCase("entities")) {
+                    if(chunk.getEntities().length >= entityLimit) {
+                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                        }
+                    }
                 }
             }
         }

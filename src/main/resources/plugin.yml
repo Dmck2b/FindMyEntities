@@ -7,7 +7,7 @@ website: suddenly.coffee
 commands:
     findmyentities:
         description: Find all the (tile)entities in the player's current world or specified world
-        usage: /<command> <tileeneitites/entities> (world)
+        usage: /<command> <tileeneitites/entities> (world) (radius in chunks from 0,0)
         permission: find-my-entities.find
     teleporttochunk:
         description: Teleports you to the corner of a specified chunk
