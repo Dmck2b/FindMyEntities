@@ -125,7 +125,6 @@ public class Main extends JavaPlugin implements Listener{
 
         for(chunkX = 0; chunkX < radius; chunkX++) {
             for(chunkZ = 0; chunkZ < radius; chunkZ++) {
-                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
                     if(type.equalsIgnoreCase("tileentities")) {
@@ -140,7 +139,6 @@ public class Main extends JavaPlugin implements Listener{
                 }
             }
             for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
-                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
                     if(type.equalsIgnoreCase("tileentities")) {
@@ -158,7 +156,6 @@ public class Main extends JavaPlugin implements Listener{
         
         for(chunkX = 0; chunkX > -radius; chunkX--) {
             for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
-                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
                     if(type.equalsIgnoreCase("tileentities")) {
@@ -173,7 +170,6 @@ public class Main extends JavaPlugin implements Listener{
                 }
             }
             for(chunkZ = 0; chunkZ < radius; chunkZ++) {
-                Bukkit.getLogger().info("" + chunkX + " " + chunkZ);
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
                     if(type.equalsIgnoreCase("tileentities")) {
