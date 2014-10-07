@@ -8,8 +8,8 @@ commands:
     findmyentities:
         description: Find all the (tile)entities in the player's current world or specified world
         usage: /<command> <tileeneitites/entities> (world) (radius in chunks from 0,0)
-        permission: find-my-entities.find
+        permission: findmyentities.find
     teleporttochunk:
         description: Teleports you to the corner of a specified chunk
         usage: /<command> <int> <int> (world)
-        permission: find-my-entities.teleport
+        permission: findmyentities.teleport
