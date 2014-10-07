@@ -2,6 +2,7 @@ package coffee.suddenly.findmyentities;
 
 import static java.lang.Integer.parseInt;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,43 +26,44 @@ public class Main extends JavaPlugin implements Listener{
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         // Findmyentities command
 	if(cmd.getName().equalsIgnoreCase("findmyentities")) {
-            if(args.length == 1) {
+            if(args.length == 1) { // Normal loaded chunks check
                 if(sender instanceof Player) {
                     if(args[0].equalsIgnoreCase("entities") || args[0].equalsIgnoreCase("tileentities")) {
                         String type = args[0];
                         Chunk[] chunks = ((Player) sender).getWorld().getLoadedChunks();
-                        actuallyDoIt(sender, chunks, type);
+                        actuallyDoItLoadedChunk(sender, chunks, type);
                     } else {
-                        sender.sendMessage("Please specify whether to search for entities or tileentities.");
+                        sender.sendMessage(ChatColor.RED + "Please specify whether to search for entities or tileentities.");
                     }
                 } else {
-                    sender.sendMessage("Please specify a world.");
+                    sender.sendMessage(ChatColor.RED + "Please specify a world.");
                 }
-            } else if(args.length == 2) {
+            } else if(args.length == 2) { // Loaded chunks in a specified world
                 if(args[0].equalsIgnoreCase("entities") || args[0].equalsIgnoreCase("tileentities")) {
                     if(getServer().getWorld(args[1]) != null) {
                         String type = args[0];
                         Chunk[] chunks = getServer().getWorld(args[1]).getLoadedChunks();
-                        actuallyDoIt(sender, chunks, type);
+                        actuallyDoItLoadedChunk(sender, chunks, type);
                     } else {
-                        sender.sendMessage("Please specify an actual world.");
+                        sender.sendMessage(ChatColor.RED + "Please specify an actual world.");
                     }
                 } else {
-                    sender.sendMessage("Please specify whether to search for entities or tileentities.");
+                    sender.sendMessage(ChatColor.RED + "Please specify whether to search for entities or tileentities.");
                 }
-            } else if (args.length == 3) {
-                if(args[2].matches(("\\d+")) ) {
+            } else if (args.length == 3) { // Specified radius from 0,0 in the specified world the world
+                if(args[2].matches(("\\d+")) ) { // Is it a number? 
                     if(args[0].equalsIgnoreCase("entities") || args[0].equalsIgnoreCase("tileentities")) {
                         if(getServer().getWorld(args[1]) != null) {
                             String type = args[0];
                             World world = getServer().getWorld(args[1]);
                             Integer radius = parseInt(args[2]);
+                            sender.sendMessage(ChatColor.GOLD + "Begining search. If you set the radius too large this may take a long time or cause your server to crash.");
                             doItForUnloadedChunks(world, type, sender, radius);
                         } else {
-                            sender.sendMessage("Please specify an actual world.");
+                            sender.sendMessage(ChatColor.RED + "Please specify an actual world.");
                         }
                     } else {
-                        sender.sendMessage("Please specify whether to search for entities or tileentities.");
+                        sender.sendMessage(ChatColor.RED + "Please specify whether to search for entities or tileentities.");
                     }
                 } else {
                     return false;
@@ -73,53 +75,66 @@ public class Main extends JavaPlugin implements Listener{
         //Teleporttochunk command
         } else if (cmd.getName().equalsIgnoreCase("teleporttochunk")) {
             if(sender instanceof Player) {
-                if(args.length == 2) {
-                    try {
-                        double x = Double.parseDouble(args[0]) * 16;
-                        double z = Double.parseDouble(args[1]) * 16;
-                        ((Player) sender).teleport(new Location(((Player) sender).getWorld(), x, 256, z));
-                        sender.sendMessage("Teleporting you to chunk " + args[0] + ", " + args[1]);
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
-                } else if (args.length == 3) {
-                    try {
-                        double x = Double.parseDouble(args[0]) * 16;
-                        double z = Double.parseDouble(args[1]) * 16;
-                        if(getServer().getWorld(args[2]) == null) {
-                            sender.sendMessage("Invalid world specified.");
-                        } else {
-                            ((Player) sender).teleport(new Location(getServer().getWorld(args[2]), x, 256, z));
-                            sender.sendMessage("Teleporting you to chunk " + args[0] + ", " + args[1] + " in world " + args[2]);
+                if(args.length > 1) {
+                    if(args[0].matches("\\d+") && args[1].matches("\\d+") ) { // Are they numbers?
+                        if(args.length == 2) {
+                            double x = Double.parseDouble(args[0]) * 16;
+                            double z = Double.parseDouble(args[1]) * 16;
+                            ((Player) sender).teleport(new Location(((Player) sender).getWorld(), x, 256, z));
+                            sender.sendMessage(ChatColor.GREEN + "Teleporting you to chunk " + args[0] + ", " + args[1]);
+                        } else if (args.length == 3) {
+                            double x = Double.parseDouble(args[0]) * 16;
+                            double z = Double.parseDouble(args[1]) * 16;
+                            if(getServer().getWorld(args[2]) == null) {
+                                sender.sendMessage(ChatColor.RED + "Invalid world specified.");
+                            } else {
+                                ((Player) sender).teleport(new Location(getServer().getWorld(args[2]), x, 256, z));
+                                sender.sendMessage(ChatColor.GREEN + "Teleporting you to chunk " + args[0] + ", " + args[1] + " in world " + args[2]);
+                            }
                         }
-                    } catch (NumberFormatException e) {
-                        return false;
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Please specify numbers for the chunks.");
                     }
                 } else {
                     return false;
                 }
+            } else {
+                sender.sendMessage(ChatColor.RED + "Please ensure you are a player to use this command.");
             }
         }
         return true;
     }
     
-    private void actuallyDoIt(CommandSender sender, Chunk[] chunks, String type) {
+    private void actuallyDoItLoadedChunk(CommandSender sender, Chunk[] chunks, String type) {
         if(type.equalsIgnoreCase("tileentities")) {
             for(Chunk chunk : chunks) {
                 if(chunk.getTileEntities().length >= entityLimit) {
-                    sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                    sender.sendMessage(ChatColor.GRAY + "" + chunk.getTileEntities().length + ChatColor.GOLD +  " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
                 }
             }
         } else if(type.equalsIgnoreCase("entities")) {
             for(Chunk chunk : chunks) {
                 if(chunk.getEntities().length >= entityLimit) {
-                    sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                    sender.sendMessage(ChatColor.GRAY + "" + chunk.getEntities().length + ChatColor.GOLD +  " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
                 }
             }
         }
-        sender.sendMessage("Finished searching.");
-    } 
-    public void doItForUnloadedChunks(World world, String type, CommandSender sender, Integer radius) {
+        sender.sendMessage(ChatColor.GREEN + "Finished searching.");
+    }
+    
+    private void actuallyDoItUnloadedChunk(CommandSender sender, Chunk chunk, String type) {
+        if(type.equalsIgnoreCase("tileentities")) {
+            if(chunk.getTileEntities().length >= entityLimit) {
+                sender.sendMessage(ChatColor.GRAY + "" + chunk.getTileEntities().length + ChatColor.GREEN +  " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+            }
+        } else if(type.equalsIgnoreCase("entities")) {
+            if(chunk.getEntities().length >= entityLimit) {
+                sender.sendMessage(ChatColor.GRAY + "" + chunk.getEntities().length + ChatColor.GREEN + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+            }
+        }
+    }
+    
+    private void doItForUnloadedChunks(World world, String type, CommandSender sender, Integer radius) {
         int chunkX;
         int chunkZ;
 
@@ -127,29 +142,13 @@ public class Main extends JavaPlugin implements Listener{
             for(chunkZ = 0; chunkZ < radius; chunkZ++) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
-                    if(type.equalsIgnoreCase("tileentities")) {
-                        if(chunk.getTileEntities().length >= entityLimit) {
-                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    } else if(type.equalsIgnoreCase("entities")) {
-                    if(chunk.getEntities().length >= entityLimit) {
-                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    }
+                    actuallyDoItUnloadedChunk(sender, chunk, type);
                 }
             }
             for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
-                    if(type.equalsIgnoreCase("tileentities")) {
-                        if(chunk.getTileEntities().length >= entityLimit) {
-                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    } else if(type.equalsIgnoreCase("entities")) {
-                    if(chunk.getEntities().length >= entityLimit) {
-                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    }
+                    actuallyDoItUnloadedChunk(sender, chunk, type);
                 }
             }
         }
@@ -158,32 +157,16 @@ public class Main extends JavaPlugin implements Listener{
             for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
-                    if(type.equalsIgnoreCase("tileentities")) {
-                        if(chunk.getTileEntities().length >= entityLimit) {
-                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    } else if(type.equalsIgnoreCase("entities")) {
-                    if(chunk.getEntities().length >= entityLimit) {
-                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    }
+                    actuallyDoItUnloadedChunk(sender, chunk, type);
                 }
             }
             for(chunkZ = 0; chunkZ < radius; chunkZ++) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
                 if(chunk != null) {
-                    if(type.equalsIgnoreCase("tileentities")) {
-                        if(chunk.getTileEntities().length >= entityLimit) {
-                            sender.sendMessage(chunk.getTileEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    } else if(type.equalsIgnoreCase("entities")) {
-                    if(chunk.getEntities().length >= entityLimit) {
-                        sender.sendMessage(chunk.getEntities().length + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
-                        }
-                    }
+                    actuallyDoItUnloadedChunk(sender, chunk, type);
                 }
             }
         }
-        sender.sendMessage("Finished searching.");
+        sender.sendMessage(ChatColor.GREEN + "Finished searching.");
     }
 }
