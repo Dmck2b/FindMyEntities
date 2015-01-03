@@ -1,9 +1,9 @@
 name: FindMyEntities
-version: 1.0-SNAPSHOT
+version: 1.0.1-SNAPSHOT
 main: coffee.suddenly.findmyentities.Main
 author: Suddenly
 description: Find the chunks causing your entity issues
-website: suddenly.coffee
+website: www.suddenly.coffee
 commands:
     findmyentities:
         description: Find all the (tile)entities in the player's current world or specified world
