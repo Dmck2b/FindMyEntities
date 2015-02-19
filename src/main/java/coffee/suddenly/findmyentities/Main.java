@@ -1,7 +1,6 @@
 package coffee.suddenly.findmyentities;
 
 import static java.lang.Integer.parseInt;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -15,7 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin implements Listener{
     
     private static int entityLimit;
-    
+    private boolean argCheck = false;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -76,7 +76,11 @@ public class Main extends JavaPlugin implements Listener{
         } else if (cmd.getName().equalsIgnoreCase("teleporttochunk")) {
             if(sender instanceof Player) {
                 if(args.length > 1) {
-                    if(args[0].matches("\\d+") && args[1].matches("\\d+") ) { // Are they numbers?
+                    argCheck = false;
+                    if(args[0].contains("-") || args[1].contains("-")) {
+                        argCheck = true;
+                    }
+                    if((args[0].matches("\\d+") && args[1].matches("\\d+")) || argCheck) { // Are they numbers?
                         if(args.length == 2) {
                             double x = Double.parseDouble(args[0]) * 16;
                             double z = Double.parseDouble(args[1]) * 16;
@@ -115,7 +119,7 @@ public class Main extends JavaPlugin implements Listener{
         } else if(type.equalsIgnoreCase("entities")) {
             for(Chunk chunk : chunks) {
                 if(chunk.getEntities().length >= entityLimit) {
-                    sender.sendMessage(ChatColor.GRAY + "" + chunk.getEntities().length + ChatColor.GOLD +  " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                    sender.sendMessage(ChatColor.GRAY + "" + chunk.getEntities().length + ChatColor.GOLD +  " entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
                 }
             }
         }
@@ -129,7 +133,7 @@ public class Main extends JavaPlugin implements Listener{
             }
         } else if(type.equalsIgnoreCase("entities")) {
             if(chunk.getEntities().length >= entityLimit) {
-                sender.sendMessage(ChatColor.GRAY + "" + chunk.getEntities().length + ChatColor.GREEN + " tile entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
+                sender.sendMessage(ChatColor.GRAY + "" + chunk.getEntities().length + ChatColor.GREEN + " entities were found in the chunk at " + chunk.getX() + ", " + chunk.getZ());
             }
         }
     }
@@ -141,30 +145,26 @@ public class Main extends JavaPlugin implements Listener{
         for(chunkX = 0; chunkX < radius; chunkX++) {
             for(chunkZ = 0; chunkZ < radius; chunkZ++) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-                if(chunk != null) {
-                    actuallyDoItUnloadedChunk(sender, chunk, type);
-                }
+                chunk.load(false);
+                actuallyDoItUnloadedChunk(sender, chunk, type);
             }
             for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-                if(chunk != null) {
-                    actuallyDoItUnloadedChunk(sender, chunk, type);
-                }
+                chunk.load(false);
+                actuallyDoItUnloadedChunk(sender, chunk, type);
             }
         }
         
         for(chunkX = 0; chunkX > -radius; chunkX--) {
             for(chunkZ = 0; chunkZ > -radius; chunkZ--) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-                if(chunk != null) {
-                    actuallyDoItUnloadedChunk(sender, chunk, type);
-                }
+                chunk.load(false);
+                actuallyDoItUnloadedChunk(sender, chunk, type);
             }
             for(chunkZ = 0; chunkZ < radius; chunkZ++) {
                 Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-                if(chunk != null) {
-                    actuallyDoItUnloadedChunk(sender, chunk, type);
-                }
+                chunk.load(false);
+                actuallyDoItUnloadedChunk(sender, chunk, type);
             }
         }
         sender.sendMessage(ChatColor.GREEN + "Finished searching.");
