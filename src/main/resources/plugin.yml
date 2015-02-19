@@ -1,5 +1,5 @@
 name: FindMyEntities
-version: 1.0.1-SNAPSHOT
+version: ${project.version}
 main: coffee.suddenly.findmyentities.Main
 author: Suddenly
 description: Find the chunks causing your entity issues
